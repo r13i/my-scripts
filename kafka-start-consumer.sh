@@ -9,6 +9,20 @@ then
 	echo "Kafka directory NOT found ! Please place and run this script from the root Kafka directory (e.g. kafka_2.11-1.0.0/my-script-kafka.sh)"
 
 else
+	if [ ! -z "$1" ] && [ ! -z "$2" ]
+	then
+		if [ "$1" = "-t" ] || [ "$1" = "--topic" ]
+		then
+			TOPIC="$2"
+		else
+			echo "HOW TO: $0 <[-t | --topic] 'some-topic-name'> (topic defaults to 'test-topic')"
+			return 1
+		fi
+	else
+		TOPIC="test-topic"
+	fi
+
+
 	# Make sure zookeeper is launched:
 	# $ telnet localhost 2181
 	# then run stats
@@ -28,9 +42,9 @@ else
 
 
 
-	# Start consumer from topic 'test-topic'
-	topic="test-topic"
-	start_consumer="${kafka_bin_directory}/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic ${topic} --from-beginning";
-	echo "Starting Kafka consumer on topic ${topic} ..."
+	# Start consumer from passed topic argument or 'test-topic'
+
+	start_consumer="${kafka_bin_directory}/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic ${TOPIC} --from-beginning";
+	echo "Starting Kafka consumer on topic ${TOPIC} ..."
 	eval "${start_consumer}";
 fi
